@@ -5,6 +5,10 @@
 package ru.spec.javaee.ejb;
 
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 
 import ru.spec.javaee.aop.LogTime;
@@ -16,13 +20,17 @@ import javax.ejb.LocalBean;
 @LocalBean
 public class NewSessionBean implements EchoService {
 
-	/* (non-Javadoc)
-	 * @see ru.spec.javaee.ejb.EchoService#echo(java.lang.String)
-	 */
+	@Inject
+	Event<UserDto> bus;
+	
 	@Override
 //	@Interceptors(LogTimeInterceptor.class)
 	@LogTime
 	public String echo(String msg) {
+		UserDto userDto = new UserDto();
+		bus.fire(userDto);
+		/*processUser(userDto);
+		checkuser(userDto);*/
 		return "re:" + msg;
 	}
 	
@@ -30,5 +38,15 @@ public class NewSessionBean implements EchoService {
 	@LogTime(printResult = true)
 	public String echo2(String msg) {
 		return "re2:" + msg;
+	}
+	
+	@LogTime
+	public void processUser(@Observes UserDto user) {
+		
+	}
+	
+	@LogTime
+	public void checkuser(@Observes(during = TransactionPhase.BEFORE_COMPLETION) UserDto user) {
+		
 	}
 }

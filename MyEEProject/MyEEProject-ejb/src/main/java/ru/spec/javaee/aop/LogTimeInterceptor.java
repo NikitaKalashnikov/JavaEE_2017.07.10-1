@@ -16,7 +16,10 @@ public class LogTimeInterceptor {
 		
 		if (lt != null) {
 			printResult = lt.printResult();
+		} else {
+			printResult = ctx.getTarget().getClass().getAnnotation(LogTime.class).printResult();
 		}
+		
 		
 		ctx.getParameters();
 		long ts0 = System.nanoTime();
